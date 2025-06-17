@@ -51,7 +51,7 @@ export default function App() {
                 { ...die, isHeld: !die.isHeld } :
                 die
         ))
-    }
+    } 
 
 
     const [elapsedTime, setElapsedTime] = useState(0);
