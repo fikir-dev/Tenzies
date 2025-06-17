@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react"
 import Die from "./Die"
 import { nanoid } from "nanoid"
 import Confetti from "react-confetti"
-import React, { memo } from "react";
 
 
 
@@ -58,7 +57,7 @@ export default function App() {
     const timerRef = useRef(null);
 
     const formatTime = (ms) => {
-        const seconds = Math.floor((ms / 1000) % 60);
+        const seconds = Math.floor((ms / 1000));
         return `${String(seconds).padStart(2, '0')}`;
     };
 
@@ -67,7 +66,7 @@ export default function App() {
         const startTime = Date.now() - elapsedTime;
         timerRef.current = setInterval(() => {
             setElapsedTime(Date.now() - startTime);
-        }, 1000);}
+        }, 1000)}
     };
    
     window.onload = function() {
@@ -88,7 +87,6 @@ export default function App() {
         />
     ))
 
-    console.log('mew')
     return (
         <main>
             {gameWon && <Confetti />}
@@ -100,11 +98,11 @@ export default function App() {
             <div className='time'>
                 <div className='timeInner'>
                     <p>Time</p>
-                    <p>{formatTime(elapsedTime)}</p>
+                    <p>{formatTime(elapsedTime)}s</p>
                 </div>
                 <div className='timeInner'>
                     <p>Best time</p>
-                    <p>24S</p>
+                    <p>35s</p>
                 </div>
                 
             </div>
