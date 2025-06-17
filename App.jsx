@@ -2,19 +2,26 @@ import { useState, useRef, useEffect } from "react"
 import Die from "./Die"
 import { nanoid } from "nanoid"
 import Confetti from "react-confetti"
+import React, { memo } from "react";
+
+
 
 export default function App() {
     const [dice, setDice] = useState(() => generateAllNewDice())
     const buttonRef = useRef(null)
 
+
+
     const gameWon = dice.every(die => die.isHeld) &&
         dice.every(die => die.value === dice[0].value)
-        
+            
     useEffect(() => {
         if (gameWon) {
             buttonRef.current.focus()
         }
     }, [gameWon])
+
+       
 
     function generateAllNewDice() {
         return new Array(10)
@@ -46,45 +53,42 @@ export default function App() {
         ))
     }
 
-    function whenClick(){
-        toggleStopwatch()
-        rollDice()
-    }
 
     const [elapsedTime, setElapsedTime] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
     const timerRef = useRef(null);
 
     const formatTime = (ms) => {
-        const milliseconds = Math.floor((ms % 1000) / 10);
         const seconds = Math.floor((ms / 1000) % 60);
-        const minutes = Math.floor((ms / (1000 * 60)) % 60);
-        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+        return `${String(seconds).padStart(2, '0')}`;
     };
 
     const toggleStopwatch = () => {
-        if (!isRunning) {
-        setIsRunning(true);
+        if (!gameWon) {
         const startTime = Date.now() - elapsedTime;
         timerRef.current = setInterval(() => {
             setElapsedTime(Date.now() - startTime);
-        }, 10);
-        } else {
-        clearInterval(timerRef.current);
-        setIsRunning(false);
-        }
+        }, 1000);}
     };
+   
+    window.onload = function() {
+    toggleStopwatch();
+    };
+
+    if(gameWon){
+        clearInterval(timerRef.current);
+    }
+    
 
     const diceElements = dice.map(dieObj => (
         <Die
             key={dieObj.id}
             value={dieObj.value}
             isHeld={dieObj.isHeld}
-            hold={() => hold(dieObj.id)}
+            hold={() => hold(dieObj.id)}  
         />
     ))
 
-
+    console.log('mew')
     return (
         <main>
             {gameWon && <Confetti />}
@@ -107,7 +111,7 @@ export default function App() {
             <div className="dice-container">
                 {diceElements}
             </div>
-            <button ref={buttonRef} className="roll-dice" onClick={whenClick}>
+            <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
                 {gameWon ? "New Game" : "Roll"}
             </button>
         </main>
