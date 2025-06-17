@@ -46,6 +46,35 @@ export default function App() {
         ))
     }
 
+    function whenClick(){
+        toggleStopwatch()
+        rollDice()
+    }
+
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+    const timerRef = useRef(null);
+
+    const formatTime = (ms) => {
+        const milliseconds = Math.floor((ms % 1000) / 10);
+        const seconds = Math.floor((ms / 1000) % 60);
+        const minutes = Math.floor((ms / (1000 * 60)) % 60);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+    };
+
+    const toggleStopwatch = () => {
+        if (!isRunning) {
+        setIsRunning(true);
+        const startTime = Date.now() - elapsedTime;
+        timerRef.current = setInterval(() => {
+            setElapsedTime(Date.now() - startTime);
+        }, 10);
+        } else {
+        clearInterval(timerRef.current);
+        setIsRunning(false);
+        }
+    };
+
     const diceElements = dice.map(dieObj => (
         <Die
             key={dieObj.id}
@@ -54,6 +83,7 @@ export default function App() {
             hold={() => hold(dieObj.id)}
         />
     ))
+
 
     return (
         <main>
@@ -66,7 +96,7 @@ export default function App() {
             <div className='time'>
                 <div className='timeInner'>
                     <p>Time</p>
-                    <p>32S</p>
+                    <p>{formatTime(elapsedTime)}</p>
                 </div>
                 <div className='timeInner'>
                     <p>Best time</p>
@@ -77,7 +107,7 @@ export default function App() {
             <div className="dice-container">
                 {diceElements}
             </div>
-            <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
+            <button ref={buttonRef} className="roll-dice" onClick={whenClick}>
                 {gameWon ? "New Game" : "Roll"}
             </button>
         </main>
