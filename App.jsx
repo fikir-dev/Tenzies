@@ -3,25 +3,14 @@ import Die from "./Die"
 import { nanoid } from "nanoid"
 import Confetti from "react-confetti"
 
-
-
 export default function App() {
     const [dice, setDice] = useState(() => generateAllNewDice())
     const buttonRef = useRef(null)
-
-
-
     const gameWon = dice.every(die => die.isHeld) &&
         dice.every(die => die.value === dice[0].value)
             
-    useEffect(() => {
-        if (gameWon) {
-            buttonRef.current.focus()
-        }
-    }, [gameWon])
 
-       
-
+    
     function generateAllNewDice() {
         return new Array(10)
             .fill(0)
@@ -31,13 +20,14 @@ export default function App() {
                 id: nanoid()
             }))
     }
+
     
     function rollDice() {
         if (!gameWon) {
             setDice(oldDice => oldDice.map(die =>
                 die.isHeld ?
                     die :
-                    { ...die, value: Math.ceil(Math.random() * 6) }
+                    { ...die, value: Math.ceil(Math.random() * 1) }
             ))
         } else {
             setDice(generateAllNewDice())
@@ -54,7 +44,20 @@ export default function App() {
 
 
     const [elapsedTime, setElapsedTime] = useState(0);
+    const [bestTime, setBestTime] = useState(null)
     const timerRef = useRef(null);
+        
+     
+
+useEffect(() => {
+    if (gameWon) {
+        setBestTime(prevBest => (prevBest === null || elapsedTime < prevBest ? elapsedTime : prevBest));
+        buttonRef.current.focus();
+        clearInterval(timerRef.current);   
+    }
+}, [gameWon]);
+
+
 
     const formatTime = (ms) => {
         const seconds = Math.floor((ms / 1000));
@@ -62,21 +65,20 @@ export default function App() {
     };
 
     const toggleStopwatch = () => {
-        if (!gameWon) {
-        const startTime = Date.now() - elapsedTime;
+        const startTime = Date.now();
         timerRef.current = setInterval(() => {
             setElapsedTime(Date.now() - startTime);
-        }, 1000)}
-    };
+        }, 1000);}
+
+    function newGame(){
+        setDice(generateAllNewDice())
+        setElapsedTime(0)
+        toggleStopwatch()
+    }
    
     window.onload = function() {
-    toggleStopwatch();
-    };
-
-    if(gameWon){
-        clearInterval(timerRef.current);
+    toggleStopwatch()
     }
-    
 
     const diceElements = dice.map(dieObj => (
         <Die
@@ -102,16 +104,15 @@ export default function App() {
                 </div>
                 <div className='timeInner'>
                     <p>Best time</p>
-                    <p>35s</p>
+                    <p>{bestTime ? formatTime(bestTime)+'s' : 'N/A'}</p>
                 </div>
                 
             </div>
             <div className="dice-container">
                 {diceElements}
             </div>
-            <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
-                {gameWon ? "New Game" : "Roll"}
-            </button>
+            {gameWon ? <button ref={buttonRef} className="roll-dice" onClick={newGame}>New game</button> :
+            <button ref={buttonRef} className="roll-dice" onClick={rollDice}>Roll</button>}
         </main>
     )
 }
