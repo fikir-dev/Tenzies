@@ -3,7 +3,7 @@
 A simple dice game built with React and Vite.
 
 ## Live Demo
-[Play Tenzies Online](#) 
+[Play Tenzies Online](https://tenzieszs.netlify.app/) 
 
 ---
 
